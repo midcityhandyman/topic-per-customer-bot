@@ -30,7 +30,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.live:
-        config = Config.from_env()
+        try:
+            config = Config.from_env()
+        except ValueError:
+            print("TELEGRAM_CHAT_ID must be a whole number such as -1001234567890", file=sys.stderr)
+            return 2
         if not config.bot_token or not config.chat_id:
             print("--live needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID (see .env.example)", file=sys.stderr)
             return 2

@@ -25,3 +25,13 @@ def test_live_without_credentials_refuses(tmp_path, capsys, monkeypatch):
     path.write_text("[]", encoding="utf-8")
     assert main(["replay", str(path), "--live"]) == 2
     assert "TELEGRAM_BOT_TOKEN" in capsys.readouterr().err
+
+
+def test_live_with_a_non_numeric_chat_id_refuses_cleanly(tmp_path, capsys, monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "TEST-TOKEN")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "@my_group")
+    monkeypatch.chdir(tmp_path)
+    path = tmp_path / "events.json"
+    path.write_text("[]", encoding="utf-8")
+    assert main(["replay", str(path), "--live"]) == 2
+    assert "TELEGRAM_CHAT_ID" in capsys.readouterr().err

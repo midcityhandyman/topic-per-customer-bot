@@ -9,6 +9,7 @@ from .client import (
     TelegramClient,
     TelegramError,
     TopicNotFound,
+    TopicNotModified,
 )
 from .events import InboundEvent, normalize_phone
 from .router import FilingResult, TopicRouter, UnroutableEvent
@@ -26,6 +27,7 @@ __all__ = [
     "TelegramClient",
     "TelegramError",
     "TopicNotFound",
+    "TopicNotModified",
     "TopicRouter",
     "UnroutableEvent",
     "normalize_phone",

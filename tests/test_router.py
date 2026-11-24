@@ -114,6 +114,17 @@ def test_not_modified_from_telegram_is_swallowed(router, client, store, make_eve
     assert store.get_message("call-1").statuses == ("ringing", "missed")
 
 
+def test_rename_already_applied_on_telegram_is_recorded_not_fatal(router, client, store, make_event):
+    router.handle(make_event("call-1"))
+    # Simulate a crash after the rename reached Telegram but before it was stored.
+    client.live_topics()[0].name = "Alex Sample | 555-555-0101"
+    result = router.handle(make_event("form-1", kind="form", status="new", name="Alex Sample"))
+    assert result.action == "sent" and not result.topic_renamed
+    assert store.get_customer("phone:5555550101").topic_name == "Alex Sample | 555-555-0101"
+    router.handle(make_event("text-1", kind="text", status="received"))
+    assert client.count("editForumTopic") == 1, "the stored name now matches, so no second attempt"
+
+
 def test_state_survives_a_restart(tmp_path, make_event):
     db = str(tmp_path / "bot.sqlite3")
     client = FakeTelegramClient()

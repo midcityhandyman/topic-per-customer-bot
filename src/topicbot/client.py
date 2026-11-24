@@ -34,6 +34,10 @@ class MessageNotModified(TelegramError):
     """The edit would not change anything. Telegram treats this as an error."""
 
 
+class TopicNotModified(TelegramError):
+    """The rename would not change anything. Telegram treats this as an error."""
+
+
 class RateLimited(TelegramError):
     def __init__(self, description: str, retry_after: float) -> None:
         super().__init__(description, 429)
@@ -47,6 +51,8 @@ def classify_error(code: int, description: str, retry_after: float | None = None
         return RateLimited(description, float(retry_after or 1))
     if "message is not modified" in text:
         return MessageNotModified(description, code)
+    if "topic_not_modified" in text:
+        return TopicNotModified(description, code)
     if "message to edit not found" in text or "message_id_invalid" in text:
         return MessageNotFound(description, code)
     if "message thread not found" in text or "topic_deleted" in text or "topic_id_invalid" in text:
@@ -165,8 +171,8 @@ class FakeTelegramClient:
     """In-memory supergroup that fails the same ways the real API does.
 
     It raises TopicNotFound for deleted topics, MessageNotFound for deleted
-    messages and MessageNotModified for no-op edits, so the recovery paths in
-    the router are exercised without a network.
+    messages, and MessageNotModified or TopicNotModified for no-op edits, so
+    the recovery paths in the router are exercised without a network.
     """
 
     def __init__(self) -> None:
@@ -199,7 +205,10 @@ class FakeTelegramClient:
 
     def edit_forum_topic(self, chat_id: int, topic_id: int, name: str) -> None:
         self.calls.append(("editForumTopic", {"chat_id": chat_id, "topic_id": topic_id, "name": name}))
-        self._live_topic(topic_id).name = name
+        topic = self._live_topic(topic_id)
+        if topic.name == name:
+            raise TopicNotModified("Bad Request: TOPIC_NOT_MODIFIED")
+        topic.name = name
 
     def send_message(self, chat_id: int, topic_id: int, text: str) -> int:
         self.calls.append(("sendMessage", {"chat_id": chat_id, "topic_id": topic_id, "text": text}))

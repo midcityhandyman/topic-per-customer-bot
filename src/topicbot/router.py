@@ -5,7 +5,7 @@ from __future__ import annotations
 import threading
 from dataclasses import dataclass, replace
 
-from .client import MessageNotFound, MessageNotModified, TelegramClient, TopicNotFound
+from .client import MessageNotFound, MessageNotModified, TelegramClient, TopicNotFound, TopicNotModified
 from .events import InboundEvent
 from .render import render_message, topic_title
 from .store import Customer, FiledMessage, Store
@@ -100,6 +100,11 @@ class TopicRouter:
             self.client.edit_forum_topic(self.chat_id, customer.topic_id, title)
         except TopicNotFound:
             return self._recreate_topic(renamed_customer), True, False
+        except TopicNotModified:
+            # An earlier rename reached Telegram but was never stored (a crash
+            # in between). Record it, or every later event would fail here.
+            self.store.save_customer(renamed_customer)
+            return renamed_customer, False, False
         self.store.save_customer(renamed_customer)
         return renamed_customer, False, True
 

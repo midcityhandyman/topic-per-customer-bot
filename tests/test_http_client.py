@@ -7,6 +7,7 @@ from topicbot import (
     RateLimited,
     TelegramError,
     TopicNotFound,
+    TopicNotModified,
 )
 
 CHAT = -1000000000001
@@ -74,6 +75,7 @@ def test_edit_calls_use_the_right_methods():
     [
         ("Bad Request: message thread not found", TopicNotFound),
         ("Bad Request: TOPIC_DELETED", TopicNotFound),
+        ("Bad Request: TOPIC_NOT_MODIFIED", TopicNotModified),
         ("Bad Request: message to edit not found", MessageNotFound),
         ("Bad Request: message is not modified: specified new message content is the same", MessageNotModified),
     ],
