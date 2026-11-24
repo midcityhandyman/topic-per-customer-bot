@@ -1,0 +1,97 @@
+== 1. Replay 12 inbound events ==
+  call-1001  call  ringing    -> SENT, new topic
+  call-1001  call  missed     -> EDITED
+  call-1001  call  voicemail  -> EDITED
+  call-1001  call  voicemail  -> UNCHANGED
+  form-2001  form  new        -> SENT, topic renamed
+  text-3001  text  received   -> SENT, new topic
+  form-2002  form  new        -> SENT, new topic
+  form-2001  form  quoted     -> EDITED
+  call-1002  call  ringing    -> SENT
+  call-1002  call  answered   -> EDITED
+  call-1002  call  completed  -> EDITED
+  form-2001  form  booked     -> EDITED
+
+== 2. What the team sees in the supergroup ==
+  # Alex Sample | 555-555-0101  (thread 2)
+    message 3, edited 2x
+      <b>CALL</b> | voicemail
+      From: 555-555-0101
+      At: 2026-03-02 09:14
+      Voicemail: kitchen tap is dripping, please call back.
+      History: ringing &gt; missed &gt; voicemail
+      Ref: call-1001
+    message 4, edited 2x
+      <b>FORM</b> | booked
+      From: Alex Sample (555-555-0101)
+      At: 2026-03-02 09:40
+      Quote request: replace kitchen tap.
+      History: new &gt; quoted &gt; booked
+      Ref: form-2001
+  # Jordan Example | 555-555-0102  (thread 5)
+    message 6, edited 0x
+      <b>TEXT</b> | received
+      From: Jordan Example (555-555-0102)
+      At: 2026-03-02 10:05
+      Is Thursday still OK?
+      Ref: text-3001
+    message 9, edited 2x
+      <b>CALL</b> | completed
+      From: Jordan Example (555-555-0102)
+      At: 2026-03-02 11:02
+      Duration 3m 12s.
+      History: ringing &gt; answered &gt; completed
+      Ref: call-1002
+  # Casey Placeholder | casey.placeholder@example.com  (thread 7)
+    message 8, edited 0x
+      <b>FORM</b> | new
+      From: Casey Placeholder (casey.placeholder@example.com)
+      At: 2026-03-02 10:30
+      Contact form: fence repair &lt;urgent&gt;.
+      Ref: form-2002
+
+== 3. Someone deletes a topic by hand; the next event heals it ==
+  deleted topic 'Alex Sample | 555-555-0101' (thread 2)
+  form-2001  form  completed  -> RESENT, new topic
+  text-3002  text  received   -> SENT
+  # Jordan Example | 555-555-0102  (thread 5)
+    message 6, edited 0x
+      <b>TEXT</b> | received
+      From: Jordan Example (555-555-0102)
+      At: 2026-03-02 10:05
+      Is Thursday still OK?
+      Ref: text-3001
+    message 9, edited 2x
+      <b>CALL</b> | completed
+      From: Jordan Example (555-555-0102)
+      At: 2026-03-02 11:02
+      Duration 3m 12s.
+      History: ringing &gt; answered &gt; completed
+      Ref: call-1002
+  # Casey Placeholder | casey.placeholder@example.com  (thread 7)
+    message 8, edited 0x
+      <b>FORM</b> | new
+      From: Casey Placeholder (casey.placeholder@example.com)
+      At: 2026-03-02 10:30
+      Contact form: fence repair &lt;urgent&gt;.
+      Ref: form-2002
+  # Alex Sample | 555-555-0101  (thread 10)
+    message 11, edited 0x
+      <b>FORM</b> | completed
+      From: Alex Sample (555-555-0101)
+      At: 2026-03-02 09:40
+      Quote request: replace kitchen tap.
+      History: new &gt; quoted &gt; booked &gt; completed
+      Ref: form-2001
+    message 12, edited 0x
+      <b>TEXT</b> | received
+      From: Alex Sample (555-555-0101)
+      Thanks, all sorted.
+      Ref: text-3002
+
+== 4. Bot API calls made ==
+  createForumTopic  4
+  editForumTopic    1
+  sendMessage       8
+  editMessageText   7
+  14 events handled, 8 messages sent, 3 live topics

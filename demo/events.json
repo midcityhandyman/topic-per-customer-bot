@@ -1,0 +1,14 @@
+[
+  {"event_id": "call-1001", "kind": "call", "status": "ringing", "phone": "(555) 555-0101", "occurred_at": "2026-03-02 09:14"},
+  {"event_id": "call-1001", "kind": "call", "status": "missed"},
+  {"event_id": "call-1001", "kind": "call", "status": "voicemail", "body": "Voicemail: kitchen tap is dripping, please call back."},
+  {"event_id": "call-1001", "kind": "call", "status": "voicemail", "body": "Voicemail: kitchen tap is dripping, please call back."},
+  {"event_id": "form-2001", "kind": "form", "status": "new", "phone": "+1 555 555 0101", "email": "alex.sample@example.com", "name": "Alex Sample", "body": "Quote request: replace kitchen tap.", "occurred_at": "2026-03-02 09:40"},
+  {"event_id": "text-3001", "kind": "text", "status": "received", "phone": "555.555.0102", "name": "Jordan Example", "body": "Is Thursday still OK?", "occurred_at": "2026-03-02 10:05"},
+  {"event_id": "form-2002", "kind": "form", "status": "new", "email": "Casey.Placeholder@example.com", "name": "Casey Placeholder", "body": "Contact form: fence repair <urgent>.", "occurred_at": "2026-03-02 10:30"},
+  {"event_id": "form-2001", "kind": "form", "status": "quoted"},
+  {"event_id": "call-1002", "kind": "call", "status": "ringing", "phone": "5555550102", "occurred_at": "2026-03-02 11:02"},
+  {"event_id": "call-1002", "kind": "call", "status": "answered"},
+  {"event_id": "call-1002", "kind": "call", "status": "completed", "body": "Duration 3m 12s."},
+  {"event_id": "form-2001", "kind": "form", "status": "booked"}
+]
